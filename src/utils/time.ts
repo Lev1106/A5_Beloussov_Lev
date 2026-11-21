@@ -2,6 +2,8 @@ import type { Booking, CheckResult, Room } from "@/types";
 
 /** "14:30" → 870 */
 export function timeStringToMinutes(time: string): number {
+  // Reject malformed clock strings rather than normalizing them (e.g. 13:99).
+  if (!/^(?:[01]\d|2[0-3]):[0-5]\d$|^24:00$/.test(time)) return NaN;
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
 }

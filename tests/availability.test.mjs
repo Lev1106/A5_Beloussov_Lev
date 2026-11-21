@@ -21,3 +21,18 @@ const tests=[
  ['AC5: does not modify frozen input array',()=>{const frozen=Object.freeze([{id:'x',roomId:'r1',start:720,end:780,title:'Test',bookedBy:'Test'}]);assert.equal(check(780,840,'r1',frozen).status,'available')}],
 ];
 for(const [title,fn] of tests)test(title,fn);
+
+test('A5: parser rejects non-clock and out-of-range times', () => {
+  for (const bad of ['13:99', '25:00', '12:3', '24:01', 'abc', '', '13:00:00', ' 13:00']) {
+    assert.equal(Number.isNaN(timeStringToMinutes(bad)), true, `${bad} must be rejected`);
+  }
+});
+test('A5: parser accepts valid boundaries', () => {
+  assert.equal(timeStringToMinutes('00:00'), 0);
+  assert.equal(timeStringToMinutes('23:59'), 1439);
+  assert.equal(timeStringToMinutes('24:00'), 1440);
+});
+test('A5: invalid string never yields a bookable interval', () => {
+  const badStart = timeStringToMinutes('13:99');
+  assert.equal(check(badStart, 900).status, 'unavailable');
+});

@@ -27,5 +27,6 @@ export function getBookingsForRoom(
   roomId: string | null
 ): Booking[] {
   if (!roomId) return [];
-  return bookings.filter((booking) => booking.roomId === roomId);
+  // Return independent records so callers cannot mutate the source bookings.
+  return bookings.filter((booking) => booking.roomId === roomId).map((booking) => ({ ...booking }));
 }

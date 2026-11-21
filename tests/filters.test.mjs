@@ -60,3 +60,20 @@ test('integration: filter change reconciles selection and booking list',()=>{
   assert.equal(id,'r1');
   assert.equal(getBookingsForRoom(sampleBookings,id).length,3);
 });
+
+test('A5: booking records from helper are independent copies', () => {
+  const ownBookings = [{ id: 'local', roomId: 'r1', start: 720, end: 780, title: 'Before', bookedBy: 'Test' }];
+  const shown = getBookingsForRoom(ownBookings, 'r1');
+  shown[0].title = 'After';
+  assert.equal(ownBookings[0].title, 'Before');
+  assert.notStrictEqual(shown[0], ownBookings[0]);
+});
+test('A5: editing displayed bookings cannot change source and check outcome', () => {
+  const ownBookings = [{ id: 'local', roomId: 'r1', start: 720, end: 780, title: 'Original', bookedBy: 'Test' }];
+  const shown = getBookingsForRoom(ownBookings, 'r1');
+  shown[0].start = 810;
+  shown[0].end = 900;
+  const firstRoom = sampleRooms[0];
+  assert.equal(checkAvailability(firstRoom, 750, 765, 615, ownBookings).status, 'unavailable');
+  assert.equal(ownBookings[0].start, 720);
+});
